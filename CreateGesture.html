@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Gesture</title>
+    <style>
+        body{
+            width:100vw;
+            height:100vh;
+        }
+        :root{
+            --pixSize:10px;
+            --dim:50*var(--pixSize);
+        }
+        .download-button{
+            padding:10px;
+            background-color: green;
+            color:white;
+            margin-top: var(--pixSize);
+        }
+    
+        .pix{
+            width:var(--pixSize);
+            height:var(--pixSize);
+            background-color: gray;
+            outline: 1px solid black;
+
+            user-select: none;
+            -moz-user-select: none;
+            -webkit-user-drag: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+        }
+        .row{
+            height:var(--pixSize);
+            width:var(--dim);
+        }
+        #board,#canv{
+            width:var(--dim);
+            height:var(--dim);
+        }
+    </style>
+</head>
+<body>
+    <div id="canv">
+        <div id="board"></div>
+    </div><br/>
+    <span class="download-button" onClick="clickShix()">Download</span>
+    <script>
+
+        var width = 50;
+        var height = width;
+
+        class Pixel{
+            constructor(x,y,element){
+                this.x = x;
+                this.y = y;
+                this.element = element;
+            }
+        }
+        var grid = [];
+
+        function setUpBoard(){
+
+            var board = document.getElementById("board");
+
+            for (let row = 0; row < height; row++) {
+                let r = document.createElement("div");
+                r.className = "row";
+                let pixelRow = [];
+                for (let col = 0; col < width; col++) {
+                    let element = document.createElement("div");
+                    element.className = "pix";
+                    element.style.display = "inline-block";
+                    let p = new Pixel(col, row, element);
+                    pixelRow.push(p);
+
+                    element.addEventListener("mouseenter",()=>color(element))
+
+                    r.append(element);
+                }
+                board.appendChild(r);
+            }
+        }
+
+        function color(element,color){
+            if (mouseDown){
+                element.style.backgroundColor = "green";
+            }
+        }
+
+        var mouseDown = false;
+        document.addEventListener("mousedown", ()=>{
+            mouseDown = true;
+        })
+        document.addEventListener("mouseup", ()=>{
+            mouseDown = false;
+        })
+
+        setUpBoard();
+    </script>
+</body>
+</html>

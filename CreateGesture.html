@@ -14,11 +14,18 @@
             --pixSize:10px;
             --dim:50*var(--pixSize);
         }
+        #centered{
+            width:500px;
+            margin:auto;
+            background-color: #EAEAEA;
+            padding:10px;
+        }
         .download-button{
             padding:10px;
             background-color: green;
             color:white;
             margin-top: var(--pixSize);
+            display:inline-block;
         }
     
         .pix{
@@ -43,11 +50,16 @@
         }
     </style>
 </head>
-<body>
-    <div id="canv">
-        <div id="board"></div>
-    </div><br/>
-    <span class="download-button" onClick="clickShix()">Download</span>
+<body onload="setUpBoard()">
+    <div id="centered">
+        <h2>draw gesture</h2>
+        <div id="canv">
+            <div id="board"></div>
+        </div><br/>
+        <p>file name : <input id="name" type="text" /> <br/></p>
+        <div class="download-button" onClick="download()">Download</div>
+    </div>
+    
     <script>
 
         var width = 50;
@@ -58,8 +70,10 @@
                 this.x = x;
                 this.y = y;
                 this.element = element;
+                this.isActive = false;
             }
         }
+
         var grid = [];
 
         function setUpBoard(){
@@ -76,19 +90,51 @@
                     element.style.display = "inline-block";
                     let p = new Pixel(col, row, element);
                     pixelRow.push(p);
-
-                    element.addEventListener("mouseenter",()=>color(element))
-
+                    element.addEventListener("mouseenter",()=>color(element,p))
                     r.append(element);
                 }
+                grid.push(pixelRow);
                 board.appendChild(r);
             }
         }
 
-        function color(element,color){
+        function color(element,pixel){
             if (mouseDown){
+                pixel.isActive = true;
                 element.style.backgroundColor = "green";
             }
+        }
+
+
+        function download(){
+
+            var regex = /^[0-9a-zA-Z ... ]+$/;
+            var input = document.getElementById("name");
+            if (input.value.match(regex) == null){
+                alert("Invalid name")
+                return;
+            } 
+
+            var fileContents = "";
+
+            for (let row = 0; row < height; row++) {
+                for (let col = 0; col < width; col++) {
+                    fileContents += grid[row][col].isActive?1:0;
+                    if (col < width-1){
+                        fileContents += ",";
+                    }
+                }
+                fileContents = fileContents + "\n";
+            }
+
+
+            var hiddenElement = document.createElement('a');
+            hiddenElement.href = 'data:attachment/text,' + encodeURI(fileContents);
+            hiddenElement.target = '_blank';
+            hiddenElement.download = input.value + ".gesture";
+            hiddenElement.click();
+
+            window.location.reload();
         }
 
         var mouseDown = false;
@@ -98,8 +144,6 @@
         document.addEventListener("mouseup", ()=>{
             mouseDown = false;
         })
-
-        setUpBoard();
     </script>
 </body>
 </html>
